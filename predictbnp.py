@@ -1,9 +1,5 @@
-#import glob
-#from platform import python_version
-#import matplotlib
 import numpy as np
 import pandas as pd
-#import sklearn
 import torch
 from sklearn.preprocessing import StandardScaler
 from torch.autograd import Variable
@@ -12,7 +8,6 @@ import torch.optim as optim
 import time
 import random
 import requests
-import json
 
 
 def transform_data(arr, seq_len):
@@ -218,18 +213,19 @@ optimizer_1 = optim.Adam(model_1.parameters(), lr=1e-3)
 scheduler_1 = optim.lr_scheduler.StepLR(optimizer_1, step_size=5, gamma=0.1)
 optimization_1 = Optimization(model_1, loss_fn_1, optimizer_1, scheduler_1)
 
-PATH = './model_0228.pth'
+###################   Модуль для дообучения
 #model_1 = Model(input_size=1, hidden_size=21, output_size=1)
+
+PATH = './model_0228.pth'
 model_1.load_state_dict(torch.load(PATH))
 
 actual_1, predicted_1, test_loss_1 = optimization_1.evaluate(x_test, y_test, future=5, batch_size=100)
 df_result_1 = to_dataframe(actual_1, predicted_1) 
 df_result_1 = inverse_transform(scaler, df_result_1, ['actual', 'predicted'])
-#x_sample = x_test[0].reshape(1, -1)
 y_pred1 = generate_sequence(scaler, optimization_1.model, x_test)
 new_df = pd.concat([df_test, df_result_1],sort=False,axis=1)
 actual=df_test[-1:][-1:]
 predict=round(df_result_1['predicted'][899])
 
-print("Предсказание",predict)
-print(actual.index[0],actual.vwap[0])
+#print("Предсказание",predict)
+#print(actual.index[0],actual.vwap[0])
